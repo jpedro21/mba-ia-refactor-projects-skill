@@ -1,0 +1,76 @@
+var baseUrl = "http://localhost:3000";
+
+### =============================================
+### Checkout
+### =============================================
+
+### Checkout — sucesso (cartão Visa, curso Docker id=2)
+POST "{{baseUrl}}/api/checkout"
+Content-Type: application/json
+
+json({
+  "usr": "Guilherme",
+  "eml": "gui@fullcycle.com.br",
+  "pwd": "senhaforte",
+  "c_id": 2,
+  "card": "4111222233334444"
+})
+
+### Checkout — novo usuário + matrícula (curso Clean Architecture id=1)
+POST "{{baseUrl}}/api/checkout"
+Content-Type: application/json
+
+json({
+  "usr": "Ana Costa",
+  "eml": "ana@fullcycle.com.br",
+  "pwd": "minhasenha123",
+  "c_id": 1,
+  "card": "4111111111111111"
+})
+
+### Checkout — pagamento recusado (cartão não começa com 4)
+POST "{{baseUrl}}/api/checkout"
+Content-Type: application/json
+
+json({
+  "usr": "João",
+  "eml": "joao@teste.com",
+  "pwd": "123",
+  "c_id": 1,
+  "card": "5111222233334444"
+})
+
+### Checkout — curso inexistente
+POST "{{baseUrl}}/api/checkout"
+Content-Type: application/json
+
+json({
+  "usr": "Teste",
+  "eml": "teste@email.com",
+  "pwd": "123456",
+  "c_id": 99,
+  "card": "4111222233334444"
+})
+
+### Checkout — campos obrigatórios ausentes
+POST "{{baseUrl}}/api/checkout"
+Content-Type: application/json
+
+json({
+  "usr": "Sem Email",
+  "c_id": 1
+})
+
+### =============================================
+### Relatórios
+### =============================================
+
+### Relatório financeiro administrativo
+GET "{{baseUrl}}/api/admin/financial-report"
+
+### =============================================
+### Usuários
+### =============================================
+
+### Deletar usuário (remove matrículas e pagamentos em cascade)
+DELETE "{{baseUrl}}/api/users/1"

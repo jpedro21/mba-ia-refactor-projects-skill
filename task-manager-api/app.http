@@ -1,0 +1,163 @@
+var baseUrl = "http://localhost:5000";
+
+# Após rodar `python seed.py`, os IDs de referência são:
+#   Usuários: 1=João (admin), 2=Maria (user), 3=Pedro (manager)
+#   Categorias: 1=Backend, 2=Frontend, 3=DevOps, 4=Bug
+#   Tasks: 1 a 10
+
+### =============================================
+### Geral
+### =============================================
+
+### Index — informações da API
+GET "{{baseUrl}}/"
+
+### Health check
+GET "{{baseUrl}}/health"
+
+### =============================================
+### Tasks
+### =============================================
+
+### Listar todas as tasks
+GET "{{baseUrl}}/tasks"
+
+### Buscar task por ID
+GET "{{baseUrl}}/tasks/1"
+
+### Buscar tasks com filtros
+GET "{{baseUrl}}/tasks/search?q=autenticação&status=pending&priority=1&user_id=1"
+
+### Estatísticas de tasks
+GET "{{baseUrl}}/tasks/stats"
+
+### Criar task
+POST "{{baseUrl}}/tasks"
+Content-Type: application/json
+
+json({
+  "title": "Implementar cache Redis",
+  "description": "Adicionar cache para endpoints de listagem",
+  "status": "pending",
+  "priority": 2,
+  "user_id": 1,
+  "category_id": 1,
+  "due_date": "2026-08-15",
+  "tags": ["performance", "backend"]
+})
+
+### Criar task mínima (apenas título obrigatório)
+POST "{{baseUrl}}/tasks"
+Content-Type: application/json
+
+json({
+  "title": "Revisar documentação da API"
+})
+
+### Atualizar task
+PUT "{{baseUrl}}/tasks/1"
+Content-Type: application/json
+
+json({
+  "title": "Implementar autenticação JWT — em andamento",
+  "status": "in_progress",
+  "priority": 1
+})
+
+### Deletar task
+DELETE "{{baseUrl}}/tasks/10"
+
+### =============================================
+### Usuários
+### =============================================
+
+### Listar todos os usuários
+GET "{{baseUrl}}/users"
+
+### Buscar usuário por ID (inclui tasks do usuário)
+GET "{{baseUrl}}/users/1"
+
+### Listar tasks de um usuário
+GET "{{baseUrl}}/users/1/tasks"
+
+### Criar usuário
+POST "{{baseUrl}}/users"
+Content-Type: application/json
+
+json({
+  "name": "Fernanda Lima",
+  "email": "fernanda@email.com",
+  "password": "senha123",
+  "role": "user"
+})
+
+### Atualizar usuário
+PUT "{{baseUrl}}/users/2"
+Content-Type: application/json
+
+json({
+  "name": "Maria Santos Silva",
+  "role": "manager",
+  "active": true
+})
+
+### Deletar usuário (remove tasks associadas)
+DELETE "{{baseUrl}}/users/3"
+
+### Login (seed: joao@email.com / 1234)
+POST "{{baseUrl}}/login"
+Content-Type: application/json
+
+json({
+  "email": "joao@email.com",
+  "password": "1234"
+})
+
+### Login — credenciais inválidas
+POST "{{baseUrl}}/login"
+Content-Type: application/json
+
+json({
+  "email": "joao@email.com",
+  "password": "senha_errada"
+})
+
+### =============================================
+### Categorias
+### =============================================
+
+### Listar categorias
+GET "{{baseUrl}}/categories"
+
+### Criar categoria
+POST "{{baseUrl}}/categories"
+Content-Type: application/json
+
+json({
+  "name": "Mobile",
+  "description": "Tarefas de desenvolvimento mobile",
+  "color": "#9b59b6"
+})
+
+### Atualizar categoria
+PUT "{{baseUrl}}/categories/1"
+Content-Type: application/json
+
+json({
+  "name": "Backend & APIs",
+  "description": "Tarefas de backend e integração",
+  "color": "#2980b9"
+})
+
+### Deletar categoria
+DELETE "{{baseUrl}}/categories/4"
+
+### =============================================
+### Relatórios
+### =============================================
+
+### Relatório resumo geral
+GET "{{baseUrl}}/reports/summary"
+
+### Relatório por usuário
+GET "{{baseUrl}}/reports/user/1"

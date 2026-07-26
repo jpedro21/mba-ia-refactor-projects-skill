@@ -1,0 +1,126 @@
+var baseUrl = "http://localhost:5000";
+
+### =============================================
+### Geral
+### =============================================
+
+### Index — informações da API
+GET "{{baseUrl}}/"
+
+### Health check
+GET "{{baseUrl}}/health"
+
+### =============================================
+### Produtos
+### =============================================
+
+### Listar todos os produtos
+GET "{{baseUrl}}/produtos"
+
+### Buscar produto por ID
+GET "{{baseUrl}}/produtos/1"
+
+### Buscar produtos com filtros
+GET "{{baseUrl}}/produtos/busca?q=notebook&categoria=informatica&preco_min=100&preco_max=6000"
+
+### Criar produto
+POST "{{baseUrl}}/produtos"
+Content-Type: application/json
+
+json({
+  "nome": "Tablet Pro 11",
+  "descricao": "Tablet com tela de 11 polegadas",
+  "preco": 2499.90,
+  "estoque": 25,
+  "categoria": "eletronicos"
+})
+
+### Atualizar produto
+PUT "{{baseUrl}}/produtos/1"
+Content-Type: application/json
+
+json({
+  "nome": "Notebook Gamer Atualizado",
+  "descricao": "Notebook potente para jogos — edição 2026",
+  "preco": 5799.99,
+  "estoque": 8,
+  "categoria": "informatica"
+})
+
+### Deletar produto
+DELETE "{{baseUrl}}/produtos/10"
+
+### =============================================
+### Usuários
+### =============================================
+
+### Listar todos os usuários
+GET "{{baseUrl}}/usuarios"
+
+### Buscar usuário por ID
+GET "{{baseUrl}}/usuarios/1"
+
+### Criar usuário
+POST "{{baseUrl}}/usuarios"
+Content-Type: application/json
+
+json({
+  "nome": "Carlos Mendes",
+  "email": "carlos@email.com",
+  "senha": "senha123"
+})
+
+### Login (usuário seed: joao@email.com / 123456)
+POST "{{baseUrl}}/login"
+Content-Type: application/json
+
+json({
+  "email": "joao@email.com",
+  "senha": "123456"
+})
+
+### Login — credenciais inválidas
+POST "{{baseUrl}}/login"
+Content-Type: application/json
+
+json({
+  "email": "joao@email.com",
+  "senha": "senha_errada"
+})
+
+### =============================================
+### Pedidos
+### =============================================
+
+### Criar pedido (usuario_id 2 = João Silva, produto_id 1 = Notebook Gamer)
+POST "{{baseUrl}}/pedidos"
+Content-Type: application/json
+
+json({
+  "usuario_id": 2,
+  "itens": [
+    { "produto_id": 1, "quantidade": 1 },
+    { "produto_id": 2, "quantidade": 2 }
+  ]
+})
+
+### Listar todos os pedidos
+GET "{{baseUrl}}/pedidos"
+
+### Listar pedidos de um usuário
+GET "{{baseUrl}}/pedidos/usuario/2"
+
+### Atualizar status do pedido
+PUT "{{baseUrl}}/pedidos/1/status"
+Content-Type: application/json
+
+json({
+  "status": "aprovado"
+})
+
+### =============================================
+### Relatórios
+### =============================================
+
+### Relatório de vendas
+GET "{{baseUrl}}/relatorios/vendas"
