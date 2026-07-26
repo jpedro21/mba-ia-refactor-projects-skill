@@ -1,34 +1,34 @@
 import sqlite3
 import os
+from config.settings import DATABASE_PATH
 
-db_connection = None
-db_path = "loja.db"
 
-def get_db():
-    global db_connection
-    if db_connection is None:
-        db_connection = sqlite3.connect(db_path, check_same_thread=False)
-        db_connection.row_factory = sqlite3.Row
-        cursor = db_connection.cursor()
+class Database:
+    def __init__(self, path=None):
+        self._connection = None
+        self._path = path or DATABASE_PATH
 
+    def get_connection(self):
+        if self._connection is None:
+            self._connection = sqlite3.connect(self._path, check_same_thread=False)
+            self._connection.row_factory = sqlite3.Row
+            self._init_schema()
+        return self._connection
+
+    def _init_schema(self):
+        cursor = self._connection.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS produtos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome TEXT,
-                descricao TEXT,
-                preco REAL,
-                estoque INTEGER,
-                categoria TEXT,
-                ativo INTEGER DEFAULT 1,
+                nome TEXT, descricao TEXT, preco REAL, estoque INTEGER,
+                categoria TEXT, ativo INTEGER DEFAULT 1,
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nome TEXT,
-                email TEXT,
-                senha TEXT,
+                nome TEXT, email TEXT, senha TEXT,
                 tipo TEXT DEFAULT 'cliente',
                 criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -36,23 +36,21 @@ def get_db():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS pedidos (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                usuario_id INTEGER,
-                status TEXT DEFAULT 'pendente',
-                total REAL,
-                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                usuario_id INTEGER, status TEXT DEFAULT 'pendente',
+                total REAL, criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS itens_pedido (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                pedido_id INTEGER,
-                produto_id INTEGER,
-                quantidade INTEGER,
-                preco_unitario REAL
+                pedido_id INTEGER, produto_id INTEGER,
+                quantidade INTEGER, preco_unitario REAL
             )
         """)
-        db_connection.commit()
+        self._connection.commit()
+        self._seed_if_empty(cursor)
 
+    def _seed_if_empty(self, cursor):
         cursor.execute("SELECT COUNT(*) FROM produtos")
         if cursor.fetchone()[0] == 0:
             produtos = [
@@ -69,9 +67,8 @@ def get_db():
             ]
             cursor.executemany(
                 "INSERT INTO produtos (nome, descricao, preco, estoque, categoria) VALUES (?, ?, ?, ?, ?)",
-                produtos
+                produtos,
             )
-
             usuarios = [
                 ("Admin", "admin@loja.com", "admin123", "admin"),
                 ("João Silva", "joao@email.com", "123456", "cliente"),
@@ -79,8 +76,12 @@ def get_db():
             ]
             cursor.executemany(
                 "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)",
-                usuarios
+                usuarios,
             )
-            db_connection.commit()
+            self._connection.commit()
 
-    return db_connection
+
+db_instance = Database()
+
+def get_db():
+    return db_instance.get_connection()
