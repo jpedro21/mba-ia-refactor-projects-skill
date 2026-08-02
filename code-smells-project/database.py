@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from config.settings import DATABASE_PATH
+from models.usuario_model import hash_password
 
 
 class Database:
@@ -70,9 +71,9 @@ class Database:
                 produtos,
             )
             usuarios = [
-                ("Admin", "admin@loja.com", "admin123", "admin"),
-                ("João Silva", "joao@email.com", "123456", "cliente"),
-                ("Maria Santos", "maria@email.com", "senha123", "cliente"),
+                ("Admin", "admin@loja.com", hash_password("admin123"), "admin"),
+                ("João Silva", "joao@email.com", hash_password("123456"), "cliente"),
+                ("Maria Santos", "maria@email.com", hash_password("senha123"), "cliente"),
             ]
             cursor.executemany(
                 "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)",

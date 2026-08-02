@@ -4,7 +4,7 @@ from controllers.usuario_controller import UsuarioController
 from controllers.pedido_controller import PedidoController
 
 
-def register_routes(app, produto_ctrl, usuario_ctrl, pedido_ctrl):
+def register_routes(app, produto_ctrl, usuario_ctrl, pedido_ctrl, health_ctrl):
     @app.route("/produtos", methods=["GET"])
     def listar_produtos():
         body, status = produto_ctrl.listar()
@@ -82,6 +82,11 @@ def register_routes(app, produto_ctrl, usuario_ctrl, pedido_ctrl):
     @app.route("/relatorios/vendas", methods=["GET"])
     def relatorio_vendas():
         body, status = pedido_ctrl.relatorio_vendas()
+        return jsonify(body), status
+
+    @app.route("/health", methods=["GET"])
+    def health_check():
+        body, status = health_ctrl.check()
         return jsonify(body), status
 
     @app.route("/")

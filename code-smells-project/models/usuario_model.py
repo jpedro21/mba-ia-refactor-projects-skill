@@ -1,18 +1,22 @@
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
+def hash_password(senha):
+    return generate_password_hash(senha)
+
+
 class UsuarioModel:
     def __init__(self, db):
         self.db = db
 
-    def _row_to_dict(self, row, include_password=False):
-        data = {
+    def _row_to_dict(self, row):
+        return {
             "id": row["id"],
             "nome": row["nome"],
             "email": row["email"],
             "tipo": row["tipo"],
             "criado_em": row["criado_em"],
         }
-        if include_password:
-            data["senha"] = row["senha"]
-        return data
 
     def get_all(self):
         cursor = self.db.cursor()
@@ -27,9 +31,9 @@ class UsuarioModel:
 
     def login(self, email, senha):
         cursor = self.db.cursor()
-        cursor.execute("SELECT * FROM usuarios WHERE email = ? AND senha = ?", (email, senha))
+        cursor.execute("SELECT * FROM usuarios WHERE email = ?", (email,))
         row = cursor.fetchone()
-        if row:
+        if row and check_password_hash(row["senha"], senha):
             return {
                 "id": row["id"],
                 "nome": row["nome"],
@@ -42,7 +46,7 @@ class UsuarioModel:
         cursor = self.db.cursor()
         cursor.execute(
             "INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)",
-            (nome, email, senha, tipo),
+            (nome, email, hash_password(senha), tipo),
         )
         self.db.commit()
         return cursor.lastrowid

@@ -16,5 +16,5 @@ def register_error_handlers(app):
 
     @app.errorhandler(Exception)
     def handle_exception(e):
-        logger.error("Unhandled exception: %s", e)
-        return jsonify({"erro": str(e)}), 500
+        logger.exception("Unhandled exception: %s", e)
+        return jsonify({"erro": "Erro interno do servidor"}), 500
